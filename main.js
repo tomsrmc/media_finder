@@ -4,12 +4,25 @@ const fs = require('fs-extra')
 const isImage = require('is-image');
 const isVideo = require('is-video');
 const moment = require('moment')
-const targetFolder = "C:\\Users\\tsutton\\Downloads"
-const tempFolder = "C:\\Temp"
+
 const { nanoid } = require('nanoid')
 
+const { tempFolder, targetFolder, findImage, findVideo } = JSON.parse(
+    fs.readFileSync('./config.json')
+)
+
+const mapsDir = `${tempFolder}\\maps`
+const mediaDir = `${tempFolder}\\media`
+
+if (!fs.existsSync(mapsDir)){
+    fs.mkdirSync(mapsDir);
+}
+if (!fs.existsSync(mediaDir)){
+    fs.mkdirSync(mediaDir);
+}
+
 const findAndMove = async () => {
-    const locStore = {
+    const maps = {
         fromTo: []
     }
     let items = klawSync(targetFolder, {
@@ -18,19 +31,20 @@ const findAndMove = async () => {
     })
     for (let i = 0; i < items.length; i++) {
         const item = items[i]
-        const isMedia = isImage(item.path) || isVideo(item.path)
+        console.log(`processing ${item.path}`)
+        const isMedia = (findImage && isImage(item.path)) || (findVideo && isVideo(item.path))
         if (isMedia) {
             try {
                 const filename = item.path.match(/([^\\]+)$/)?.[0]
 
-                let dest = `${tempFolder}\\media\\${filename}`
+                let dest = `${mediaDir}\\${filename}`
 
                 const exists = fs.existsSync(dest)
 
                 if (exists) {
                     const ext = dest.match(/\.[^\.]+$/)?.[0]
                     dest = dest.replace(/\.[^\.]+$/, '')
-                    dest = `${dest}_${nanoid(4)}${ext}`
+                    dest = `${dest}_${nanoid(6)}${ext}`
                     console.log(dest)
                 }
 
@@ -44,7 +58,7 @@ const findAndMove = async () => {
                     })
                 })
                 if (moveSuccess) {
-                    locStore.fromTo.push([
+                    maps.fromTo.push([
                         item.path,
                         dest
                     ])
@@ -56,10 +70,10 @@ const findAndMove = async () => {
             }
         }
     }
-    console.log(`found and moved ${locStore.fromTo.length} items`)
-    if (locStore.fromTo.length > 0) {
-        let json = JSON.stringify(locStore);
-        fs.writeFileSync(`${tempFolder}\\locs\\locMap_${moment().format('YYYYMMDDHHmmss')}.json`, json);
+    console.log(`found and moved ${maps.fromTo.length} items`)
+    if (maps.fromTo.length > 0) {
+        let json = JSON.stringify(maps);
+        fs.writeFileSync(`${mapsDir}\\locMap_${moment().format('YYYYMMDDHHmmss')}.json`, json);
 
     }
 }
