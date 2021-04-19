@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cli-progress": "^3.9.0",
     "fs-extra": "^9.1.0",
     "is-image": "^3.0.0",
     "is-video": "^1.0.1",
