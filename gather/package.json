@@ -1,0 +1,22 @@
+{
+  "name": "image-gather",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "bin": "bin.js",
+  "scripts": {
+    "build": "pkg . --targets node14-win-x64 --output ../gather.exe",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cli-progress": "^3.9.0",
+    "fs-extra": "^9.1.0",
+    "is-image": "^3.0.0",
+    "is-video": "^1.0.1",
+    "klaw-sync": "^6.0.0",
+    "moment": "^2.29.1",
+    "nanoid": "^3.1.22"
+  }
+}
